@@ -1,4 +1,4 @@
-# Multi Manager Debug
+# Server Manager Debug Mod
 
 An operator-only debug channel for a Factorio server. It adds one command, `/debug`, and a
 remote interface for an external program. It does not open a network listener, does not ship a host

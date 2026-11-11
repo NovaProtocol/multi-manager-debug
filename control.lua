@@ -16,6 +16,7 @@ local recorder = require("debug.query.behavior_recorder")
 local agent = require("debug.agent.agent")
 local world = require("debug.agent.world")
 local blueprints = require("debug.agent.blueprints")
+local prototype_ops = require("debug.prototype")
 
 local MOD = "multi-manager-debug"
 local STORAGE_KEY = "multi_manager_debug"
@@ -29,6 +30,7 @@ local groups = {
     agent.operations or {},
     world.operations or {},
     blueprints.operations or {},
+    prototype_ops.operations or {},
 }
 
 local operations = {}
@@ -164,6 +166,38 @@ commands.add_command(
         local ok, result = pcall(dispatch, event, event.parameter)
         if not ok then
             reply(event, {ok = false, error = tostring(result)})
+        end
+    end
+)
+
+commands.add_command(
+    "multi-manager-debug-call",
+    "Internal manager RPC entry point for the debug mod.",
+    function(event)
+        if event.player_index then
+            return
+        end
+        local ok, result = pcall(function()
+            local payload = json.decode(event.parameter or "{}")
+            local args = payload.args or {}
+            local fn = payload.fn
+            if fn ~= "invoke" then
+                error("unsupported debug RPC function: " .. tostring(fn))
+            end
+            local namespace, operation = args[1], args[2]
+            local parameters = args[3] or {}
+            if namespace == "query" then
+                return json.encode(run_query(operation, parameters))
+            end
+            return json.encode(run_probe(operation, parameters))
+        end)
+        if not ok then
+            result = json.encode({ok = false, error = tostring(result)})
+        end
+        if rcon then
+            rcon.print(result)
+        else
+            log("[" .. MOD .. "] " .. result)
         end
     end
 )

@@ -1,11 +1,11 @@
 {
   "name": "multi-manager-debug",
-  "version": "0.1.3",
-  "title": "Multi Manager Debug",
+  "version": "0.2.0",
+  "title": "Server Manager Debug Mod",
   "author": "NovaProtocol",
   "contact": "https://github.com/NovaProtocol/multi-manager-debug",
   "homepage": "https://github.com/NovaProtocol/multi-manager-debug",
-  "description": "Operator-only debug channel for the fleet: world and entity inspection, player/force queries, controlled actions, blueprint and construction plans, diagnostics and file-backed notes.",
+  "description": "Operator debug RCON channel for server managers: prototypes, entities, players, blueprints, diagnostics and controlled actions.",
   "factorio_version": "2.1",
   "dependencies": [
     "base >= 2.1.0",
