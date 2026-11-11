@@ -125,14 +125,25 @@ end
 
 --- save_game -----------------------------------------------------------------
 --- Factorio exposes a real save API, so this does not need the console command
---- (which is built into the engine and unreachable from Lua anyway).
+--- (which is built into the engine and unreachable from Lua anyway). A name is
+--- required: the no-argument form can block the RCON thread indefinitely. This is
+--- the same named-save path the connector uses for manager-requested saves.
 function M.save_game(args)
+  args = args or {}
+  local name = args.name
+  if type(name) ~= 'string' or name == '' then
+    return { ok = false, error = 'name is required' }
+  end
+  if #name > 200 or name:find('[/\\]') then
+    return { ok = false, error = 'bad save name' }
+  end
   local previous = util.try(function() return game.auto_save_enabled end, nil)
-  local ok, err = pcall(function() game.server_save() end)
+  local ok, err = pcall(function() game.server_save(name) end)
   return {
     ok = ok,
     requested = ok,
-    via = 'game.server_save()',
+    name = name,
+    via = 'game.server_save(name)',
     previousAutoSaveEnabled = previous,
     error = (not ok) and tostring(err) or nil,
     note = 'Factorio writes the save asynchronously; watch the server log for "Saving finished"',

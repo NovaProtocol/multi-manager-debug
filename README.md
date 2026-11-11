@@ -57,7 +57,7 @@ The mod writes its own small config and diagnostic files under
 
 ```sh
 python3 scripts/release.py                 # build only
-python3 scripts/release.py --tag v0.1.2    # GitHub and mod portal
+python3 scripts/release.py --tag v0.1.3    # GitHub and mod portal
 ```
 
 Publishing requires `GITHUB_TOKEN` and `MOD_PORTAL_KEY`. The GitHub release is the manager's

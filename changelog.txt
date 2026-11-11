@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.3
+Date: 2026-11-11
+  Bugfixes:
+    - save_game now requires a name and calls game.server_save(name); the no-argument
+      form could block the game thread and the RCON connection indefinitely.
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 Version: 0.1.2
 Date: 2026-11-11
   Changes:
