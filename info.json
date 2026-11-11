@@ -1,0 +1,15 @@
+{
+  "name": "multi-manager-debug",
+  "version": "0.1.0",
+  "title": "Multi Manager Debug",
+  "author": "NovaProtocol",
+  "contact": "https://github.com/NovaProtocol/multi-manager-debug",
+  "homepage": "https://github.com/NovaProtocol/multi-manager-debug",
+  "description": "Operator-only debug channel for the fleet: world and entity inspection, player/force queries, controlled actions, blueprint and construction plans, diagnostics and file-backed notes.",
+  "factorio_version": "2.1",
+  "dependencies": [
+    "base >= 2.1.0",
+    "? space-age >= 2.1.0",
+    "? quality >= 2.1.0"
+  ]
+}

@@ -1,0 +1,9 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 2026-11-11
+  Features:
+    - One RCON-only /debug command with probe operations and query tools.
+    - World, entity, player, force, research, train, blueprint and construction-plan operations.
+    - Monitoring, behavior, file and console query tools.
+    - No host process, no HTTP listener, no public debug command for players.
+---------------------------------------------------------------------------------------------------
