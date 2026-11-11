@@ -4,7 +4,7 @@
 
 local M = {operations = {}}
 
-local PROTOTYPE_CLASSES = {
+local PROTOTYPE_TYPES = {
     "accumulator",
     "achievement",
     "active-defense-equipment",
@@ -267,6 +267,19 @@ local PROTOTYPE_CLASSES = {
     "wall",
 }
 
+local TOP_LEVEL_CLASSES = {
+    "achievement", "ammo-category", "autoplace-control", "custom-event", "custom-input",
+    "damage-type", "decorative", "deliver-category", "deliver-impact-combination",
+    "entity", "equipment", "equipment-grid", "fluid", "fuel-category", "impact-category",
+    "item", "item-group", "item-subgroup", "map-gen-presets", "map-settings", "mod-data",
+    "module-category", "mouse-cursor", "noise-expression", "noise-function", "particle",
+    "planet", "procession", "procession-layer-inheritance-group", "quality", "recipe",
+    "recipe-category", "resource-category", "shortcut", "space-connection", "space-location",
+    "surface", "technology", "tile", "tile-effect", "tips-and-tricks-item",
+    "trigger-target-type", "utility-constants", "utility-sounds", "utility-sprites",
+    "virtual-signal",
+}
+
 local MAX_FIELDS = 120
 local MAX_DEPTH = 3
 
@@ -325,15 +338,29 @@ local function describe(value, depth, seen, field_count)
     return out
 end
 
-local function class_set(kind)
+local function prototypes_for(kind)
     if type(kind) ~= "string" or kind == "" then
         error("class is required")
     end
-    local set = prototypes[kind]
-    if not set then
+    local direct = safe(function() return prototypes[kind] end)
+    if direct then
+        return direct
+    end
+    local out = {}
+    for _, broad in ipairs(TOP_LEVEL_CLASSES) do
+        local set = safe(function() return prototypes[broad] end)
+        if set then
+            for name, proto in pairs(set) do
+                if safe(function() return proto.type end) == kind then
+                    out[name] = proto
+                end
+            end
+        end
+    end
+    if next(out) == nil then
         error("unknown prototype class: " .. tostring(kind))
     end
-    return set
+    return out
 end
 
 local function prototype_name(proto)
@@ -345,26 +372,29 @@ local function prototype_type(proto)
 end
 
 local function class_names()
-    return PROTOTYPE_CLASSES
+    return TOP_LEVEL_CLASSES
 end
 
 M.operations.prototype_classes = function()
     local out = {}
     for _, name in ipairs(class_names()) do
         local count = 0
-        pcall(function()
-            for _ in pairs(prototypes[name]) do count = count + 1 end
-        end)
+        local set = safe(function() return prototypes[name] end)
+        if set then
+            pcall(function()
+                for _ in pairs(set) do count = count + 1 end
+            end)
+        end
         out[#out + 1] = {class = name, count = count}
     end
-    return {classes = out, total = #out}
+    return {classes = out, total = #out, types = PROTOTYPE_TYPES}
 end
 
 M.operations.prototype_list = function(_, p)
     p = p or {}
-    local set = class_set(p.class)
+    local set = prototypes_for(p.class)
     local names = {}
-    for name in pairs(set) do
+    for name, proto in pairs(set) do
         if p.query == nil or p.query == "" or tostring(name):lower():find(tostring(p.query):lower(), 1, true) then
             names[#names + 1] = tostring(name)
         end
@@ -387,7 +417,7 @@ end
 
 M.operations.prototype_get = function(_, p)
     p = p or {}
-    local set = class_set(p.class)
+    local set = prototypes_for(p.class)
     local proto = set[p.name]
     if proto == nil then
         error("unknown " .. tostring(p.class) .. " prototype: " .. tostring(p.name))
@@ -421,7 +451,7 @@ end
 
 M.operations.prototype_field = function(_, p)
     p = p or {}
-    local set = class_set(p.class)
+    local set = prototypes_for(p.class)
     local proto = set[p.name]
     if proto == nil then error("unknown " .. tostring(p.class) .. " prototype: " .. tostring(p.name)) end
     local value = proto[p.field]
@@ -437,7 +467,7 @@ M.operations.prototype_find = function(_, p)
     local total = 0
     local classes = p.class and {p.class} or class_names()
     for _, class in ipairs(classes) do
-        local set = prototypes[class]
+        local set = safe(function() return prototypes_for(class) end)
         if set then
             for name, proto in pairs(set) do
                 if query == nil or tostring(name):lower():find(query, 1, true) then
