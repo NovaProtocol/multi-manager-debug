@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 2026-11-11
+  Bugfixes:
+    - Load the debug configuration on the first tick after opening an existing save.
+    - Capture chat, command, join, leave, death and research events in the diagnostic buffer.
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2026-11-11
   Features:

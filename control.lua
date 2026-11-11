@@ -239,6 +239,9 @@ for _, entry in ipairs(event_handlers) do
 end
 
 script.on_event(defines.events.on_tick, function()
+    if not _G.__DEBUG_CONFIG then
+        configure()
+    end
     local s = state()
     if not s.spawned then
         pcall(agent.initialize, s)
