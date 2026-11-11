@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.2
+Date: 2026-11-11
+  Changes:
+    - The debug character is created lazily on the first operation that needs it.
+    - Installing the mod no longer changes a world until the operator invokes it.
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 Version: 0.1.1
 Date: 2026-11-11
   Bugfixes:

@@ -89,6 +89,15 @@ local function run_probe(operation, parameters)
     if handler == nil then
         error("unknown operation: " .. tostring(operation))
     end
+    if agent.operations[operation] ~= nil then
+        local current = state()
+        if not current.spawned then
+            local ok, err = pcall(agent.initialize, current)
+            if not ok then
+                error("could not create the debug character: " .. tostring(err))
+            end
+        end
+    end
     return handler(state(), parameters or {})
 end
 
@@ -181,12 +190,10 @@ end
 script.on_init(function()
     state()
     configure()
-    pcall(agent.initialize, state())
 end)
 
 script.on_configuration_changed(function()
     configure()
-    pcall(agent.initialize, state())
 end)
 
 local function player_name(index)
@@ -243,9 +250,6 @@ script.on_event(defines.events.on_tick, function()
         configure()
     end
     local s = state()
-    if not s.spawned then
-        pcall(agent.initialize, s)
-    end
     if s.spawned then
         pcall(agent.tick, s)
     end
